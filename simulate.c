@@ -63,55 +63,83 @@ double *simulate(const int i_max, const int t_max, double *old_array,
         }
     }
 
+    if (process_Rank == 0) {
+        cur[0] = 0;
+        old[0] = 0;
+    } else if (process_Rank == size_Of_Cluster - 1) {
+        cur[n_local + 1] = 0;
+        old[n_local + 1] = 0;
+    }
+
     else {
         MPI_Recv(old, n_local, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &status);
         MPI_Recv(cur, n_local, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &status);
     }
 
-    // loop over t-max
+
     for (t = 1; t < t_max; t++) {
         if (left_neightbor != -1) {
             MPI_Send(&cur[1], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD);
-            MPI_Recv(&cur[n_local + 1], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD, &status);
+            MPI_Recv(&cur[0], 1, MPI_DOUBLE, left_neightbor, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
 
         if (right_neightbor != size_Of_Cluster) {
             MPI_Send(&cur[n_local], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD);
-            MPI_Recv(&cur[0], 1, MPI_DOUBLE, left_neightbor, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
+            MPI_Recv(&cur[n_local + 1], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD, &status);
         }
 
-        printf("Simulating wave for process %d\n", process_Rank);
         for (int i = 1; i < n_local + 1; i++) {
             new[i] = 2.0 * cur[i] - old[i] + 0.15 * (cur[i - 1] - 2.0 * cur[i] + cur[i + 1]);
         }
 
         // rotate the buffers
-        double *temp = old;
+        double *tmp = old;
         old = cur;
         cur = new;
-        new = temp;
+        new = tmp;
+    }
 
-        if (process_Rank > 0) {
-            MPI_Send(cur, n_local, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+//    if (process_Rank > 0) {
+//        MPI_Send(cur, n_local, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+//    }
+//
+//    else {
+//        for (int i = 0; i < n_local; i++) {
+//            current_array[i] = cur[i];
+//        }
+//
+//        for (int i = 1; i < size_Of_Cluster - 1; i++) {
+//            MPI_Recv(current_array, n_local, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);
+//            for (int j = 0; j < n_local; j++) {
+//                current_array[j] = cur[j];
+//            }
+//        }
+//    }
+
+    if (process_Rank > 0) {
+        for (int i = 0; i < n_local; i++) {
+            MPI_Send(&cur[i], 1, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD);
+        }
+    }
+    else {
+        for (int i = 0; i < n_local; i++) {
+            current_array[i] = cur[i];
         }
 
-        else {
-            for (int i = 1 ; i < n_local - 1; i++) {
-                MPI_Recv(cur, n_local, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        for (int i = 1; i < size_Of_Cluster - 1; i++) {
+            for (int j = 0; j < n_local; j++) {
+                MPI_Recv(&current_array[j], 1, MPI_DOUBLE, i, tag, MPI_COMM_WORLD, &status);
+            }
+
+            for (int j = 0; j < n_local; j++) {
+                current_array[j] = cur[j];
             }
         }
     }
 
-    free(cur);
-    free(new);
-    free(old);
 
-    // finalize MPI
     MPI_Finalize();
-
-    printf("Finalised");
-
-    return next_array;
+    return current_array;
 }
+
 
