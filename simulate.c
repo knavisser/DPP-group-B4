@@ -46,10 +46,9 @@ double *simulate(const int i_max, const int t_max, double *old_array,
     int left_neightbor = process_Rank - 1;
     int right_neightbor = process_Rank + 1;
 
-    // MASTER Process
     if (process_Rank == 0) {
         for (t = 1; t < size_Of_Cluster - 1; t++) {
-            for (int i = 0; i < n_local; i++) {
+            for (int i = 0; i < n_local + 1; i++) {
                 cur[i] = current_array[i];
                 old[i] = old_array[i];
             }
@@ -57,7 +56,7 @@ double *simulate(const int i_max, const int t_max, double *old_array,
             MPI_Send(old, n_local, MPI_DOUBLE, t, tag, MPI_COMM_WORLD);
         }
 
-        for (int i = 0; i < n_local; i++) {
+        for (int i = 0; i < n_local + 1; i++) {
             cur[i] = current_array[i];
             old[i] = old_array[i];
         }
@@ -66,6 +65,7 @@ double *simulate(const int i_max, const int t_max, double *old_array,
     if (process_Rank == 0) {
         cur[0] = 0;
         old[0] = 0;
+
     } else if (process_Rank == size_Of_Cluster - 1) {
         cur[n_local + 1] = 0;
         old[n_local + 1] = 0;
@@ -80,7 +80,7 @@ double *simulate(const int i_max, const int t_max, double *old_array,
     for (t = 1; t < t_max; t++) {
         if (left_neightbor != -1) {
             MPI_Send(&cur[1], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD);
-            MPI_Recv(&cur[0], 1, MPI_DOUBLE, left_neightbor, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(&cur[0], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
 
         if (right_neightbor != size_Of_Cluster) {
@@ -99,30 +99,38 @@ double *simulate(const int i_max, const int t_max, double *old_array,
         new = tmp;
     }
 
-
     if (process_Rank > 0) {
-        for (int i = 0; i < n_local; i++) {
-            MPI_Send(&cur[i], 1, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD);
+        for (int i = 1; i < size_Of_Cluster - 1; i++) {
+            for (int j = 0; j < n_local + 1; j++) {
+                MPI_Send(&cur[j], 1, MPI_DOUBLE, 0, i, MPI_COMM_WORLD);
+            }
         }
     }
-    else {
-        for (int i = 0; i < n_local; i++) {
+
+
+    // master receives all the data from the clusters and puts it in current_array
+    if (process_Rank == 0) {
+        // master puts its own data in current_array
+        for (int i = 0; i < n_local + 1; i++) {
             current_array[i] = cur[i];
         }
 
+        // master receives data from the clusters
         for (int i = 1; i < size_Of_Cluster - 1; i++) {
-            for (int j = 0; j < n_local; j++) {
-                MPI_Recv(&current_array[j], 1, MPI_DOUBLE, i, tag, MPI_COMM_WORLD, &status);
-            }
-
-            for (int j = 0; j < n_local; j++) {
-                current_array[j] = cur[j];
+            // printf("Process 0 is receiving from process %d\n", i);
+            for (int j = 0; j < n_local + 1; j++) {
+                //printf("P[%d] current_array[%d]=%f\n", i, j, current_array[j]);
+                MPI_Recv(&current_array[j], 1, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &status);
             }
         }
     }
 
 
     MPI_Finalize();
+    free(cur);
+    free(new);
+    free(old);
+
     return current_array;
 }
 
