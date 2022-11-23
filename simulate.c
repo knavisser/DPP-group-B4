@@ -99,22 +99,6 @@ double *simulate(const int i_max, const int t_max, double *old_array,
         new = tmp;
     }
 
-//    if (process_Rank > 0) {
-//        MPI_Send(cur, n_local, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-//    }
-//
-//    else {
-//        for (int i = 0; i < n_local; i++) {
-//            current_array[i] = cur[i];
-//        }
-//
-//        for (int i = 1; i < size_Of_Cluster - 1; i++) {
-//            MPI_Recv(current_array, n_local, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);
-//            for (int j = 0; j < n_local; j++) {
-//                current_array[j] = cur[j];
-//            }
-//        }
-//    }
 
     if (process_Rank > 0) {
         for (int i = 0; i < n_local; i++) {
