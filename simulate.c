@@ -78,7 +78,7 @@ double *simulate(const int i_max, const int t_max, double *old_array,
             MPI_Recv(&cur[n_local + 1], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD, &status);
         }
 
-        for (int i = 1; i < n_local + 1; i++) {
+        for (int i = 1; i <= n_local; i++) {
             new[i] = 2.0 * cur[i] - old[i] + 0.15 * (cur[i - 1] - 2.0 * cur[i] + cur[i + 1]);
         }
 
@@ -89,30 +89,24 @@ double *simulate(const int i_max, const int t_max, double *old_array,
         new = tmp;
     }
 
+    // order data so that the master is receiving the data in the right order and can put it in the right place
     if (process_Rank > 0) {
-        for (int i = 1; i < size_Of_Cluster; i++) {
-            for (int j = 0; j < n_local + 1; j++) {
-                MPI_Send(&cur[j], 1, MPI_DOUBLE, 0, i, MPI_COMM_WORLD);
+        for (t = 1; t < size_Of_Cluster; t++) {
+            for (int i = 0; i <= n_local; i++) {
+                MPI_Send(&cur[i], n_local, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD);
             }
         }
-    }
-
-    // master receives all the data from the clusters and puts it in current_array
-    if (process_Rank == 0) {
-        // master puts its own data in current_array
-        for (int i = 0; i < n_local + 1; i++) {
+    } else {
+        for (int i = 0; i <= n_local; i++) {
             current_array[i] = cur[i];
         }
 
-        // master receives data from the clusters
         for (int i = 1; i < size_Of_Cluster; i++) {
-            for (int j = 0; j < n_local + 1; j++) {
-                //printf("Receiving %d received %d\n", i, j);
-                MPI_Recv(&current_array[j], 1, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &status);
+            for (int j = 0; j <= n_local; j++) {
+                MPI_Recv(&current_array[j], n_local, MPI_DOUBLE, i, tag, MPI_COMM_WORLD, &status);
             }
         }
     }
-
 
     MPI_Finalize();
     free(cur);

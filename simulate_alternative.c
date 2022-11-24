@@ -78,7 +78,7 @@ double *simulate(const int i_max, const int t_max, double *old_array,
             MPI_Recv(&cur[n_local + 1], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD, &status);
         }
 
-        for (int i = 1; i < n_local + 1; i++) {
+        for (int i = 0; i <= n_local; i++) {
             new[i] = 2.0 * cur[i] - old[i] + 0.15 * (cur[i - 1] - 2.0 * cur[i] + cur[i + 1]);
         }
 
@@ -92,7 +92,8 @@ double *simulate(const int i_max, const int t_max, double *old_array,
     if (process_Rank > 0) {
         for (int i = 1; i < size_Of_Cluster; i++) {
             for (int j = 0; j < n_local + 1; j++) {
-                MPI_Send(&cur[j], 1, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD);
+                printf("P[%d] cur[%d]= %f \n", process_Rank, j, cur[j]);
+                MPI_Send(&cur[j], 1, MPI_DOUBLE, 0, i, MPI_COMM_WORLD);
             }
         }
     }
@@ -107,7 +108,8 @@ double *simulate(const int i_max, const int t_max, double *old_array,
         // master receives data from the clusters
         for (int i = 1; i < size_Of_Cluster; i++) {
             for (int j = 0; j < n_local + 1; j++) {
-                MPI_Recv(&current_array[j], 1, MPI_DOUBLE, i, tag, MPI_COMM_WORLD, &status);
+                //printf("Receiving %d received %d\n", i, j);
+                MPI_Recv(&current_array[j], 1, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &status);
             }
         }
     }
@@ -117,6 +119,7 @@ double *simulate(const int i_max, const int t_max, double *old_array,
     free(cur);
     free(new);
     free(old);
+
     return current_array;
 }
 
