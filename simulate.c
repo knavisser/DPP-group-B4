@@ -56,18 +56,20 @@ double *simulate(const int i_max, const int t_max, double *old_array,
         }
 
         for (t = 1; t < size_Of_Cluster; t++) {
-            for (int i = 0; i <= n_local; i++) {
-                cur[i] = current_array[i];
-                old[i] = old_array[i];
-            }
-            MPI_Send(cur, n_local, MPI_DOUBLE, t, tag, MPI_COMM_WORLD);
-            MPI_Send(old, n_local, MPI_DOUBLE, t, tag, MPI_COMM_WORLD);
+//            for (int i = 0; i <= n_local; i++) {
+//                cur[i] = current_array[i];
+//                old[i] = old_array[i];
+//            }
+
+            MPI_Send(&cur, n_local, MPI_DOUBLE, t, tag, MPI_COMM_WORLD);
+            MPI_Send(&old, n_local, MPI_DOUBLE, t, tag, MPI_COMM_WORLD);
         }
     } else {
         MPI_Recv(old, n_local, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &status);
         MPI_Recv(cur, n_local, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &status);
     }
 
+    printf("Rank: %d "
 
     for (t = 1; t < t_max; t++) {
         if (left_neightbor != -1) {
@@ -86,8 +88,8 @@ double *simulate(const int i_max, const int t_max, double *old_array,
 
         // we calculate the wave equation we are depending on the current and old array we need to wait
         for (int i = 1; i < n_local; i++) {
-            new[i] = 2 * cur[i] - old[i] + 0.15 * (cur[i - 1] - (2 * cur[i] - cur[i + 1]));
             MPI_Wait(&request[process_Rank], &status);
+            new[i] = 2 * cur[i] - old[i] + 0.15 * (cur[i - 1] - (2 * cur[i] - cur[i + 1]));
         }
 
         // rotate the buffers
@@ -107,7 +109,6 @@ double *simulate(const int i_max, const int t_max, double *old_array,
             current_array[i] = cur[i];
         }
         for (int i = 1; i < size_Of_Cluster; i++) {
-            printf("Receiving: %d to current_array\n", i);
             //MPI_Recv(current_array + (i * n_local), n_local, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &status);
             MPI_Irecv(current_array + (i * n_local), n_local, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &request[i]);
         }
@@ -124,6 +125,7 @@ double *simulate(const int i_max, const int t_max, double *old_array,
     current_array[0] = 0;
     current_array[i_max] = 0;
 
+    printf("returning current_array\n");
     return current_array;
 }
 
