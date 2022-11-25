@@ -101,15 +101,12 @@ double *simulate(const int i_max, const int t_max, double *old_array,
         }
     }
 
-    // if master
     if (process_Rank == 0) {
         MPI_Finalize();
         free(cur);
         free(new);
         free(old);
-
         current_array[i_max] = 0.0;
-
         return current_array;
     } else {
         MPI_Finalize();

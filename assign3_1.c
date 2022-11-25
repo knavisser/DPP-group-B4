@@ -134,6 +134,13 @@ int main(int argc, char *argv[])
     printf("Took %g seconds\n", time);
     printf("Normalized: %g seconds\n", time / (1. * i_max * t_max));
 
+    /* Write the result to a file. */
+    FILE *fp;
+    fp = fopen("total3.1.txt", "a");
+    fprintf(fp, "%g\n", time / (i_max * t_max));
+    fclose(fp);
+
+
     file_write_double_array("result.txt", ret, i_max);
 
     free(old);
