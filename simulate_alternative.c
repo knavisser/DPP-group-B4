@@ -10,7 +10,7 @@ Reconsider the 1-dimensional wave equation studied in assignments 1.1 and 1.2.
  Add halo cells as necessary, and exchange their values between time steps as needed. Aim at an efficient
  implementation w.r.t. communication and memory, and use blocking MPI calls to implement the communication
  between processes.
- * Student: Jasper Bruin
+ * Student: Jasper Bruin - 12198684
  */
 
 #include <stdio.h>
@@ -39,9 +39,9 @@ double *simulate(const int i_max, const int t_max, double *old_array,
 
     int n_local = (int) ceil((double) i_max / size_Of_Cluster);
 
-    double *cur = malloc((n_local + 2) * sizeof(double));
-    double *new = malloc((n_local + 2) * sizeof(double));
-    double *old = malloc((n_local + 2) * sizeof(double));
+    double *cur = malloc((n_local) * sizeof(double));
+    double *new = malloc((n_local) * sizeof(double));
+    double *old = malloc((n_local) * sizeof(double));
 
     int left_neightbor = process_Rank - 1;
     int right_neightbor = process_Rank + 1;
@@ -60,9 +60,7 @@ double *simulate(const int i_max, const int t_max, double *old_array,
             MPI_Send(cur, n_local, MPI_DOUBLE, t, tag, MPI_COMM_WORLD);
             MPI_Send(old, n_local, MPI_DOUBLE, t, tag, MPI_COMM_WORLD);
         }
-    }
-
-    else {
+    } else {
         MPI_Recv(old, n_local, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &status);
         MPI_Recv(cur, n_local, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &status);
     }
@@ -78,8 +76,8 @@ double *simulate(const int i_max, const int t_max, double *old_array,
             MPI_Recv(&cur[n_local + 1], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD, &status);
         }
 
-        for (int i = 0; i <= n_local; i++) {
-            new[i] = 2.0 * cur[i] - old[i] + 0.15 * (cur[i - 1] - 2.0 * cur[i] + cur[i + 1]);
+        for (int i = 1; i < n_local; i++) {
+            new[i] = 2 * cur[i] - old[i] + 0.15 * (cur[i - 1] - (2 * cur[i] - cur[i + 1]));
         }
 
         // rotate the buffers
@@ -90,30 +88,20 @@ double *simulate(const int i_max, const int t_max, double *old_array,
     }
 
     if (process_Rank > 0) {
-        for (int i = 1; i < size_Of_Cluster; i++) {
-            for (int j = 0; j < n_local + 1; j++) {
-                printf("P[%d] cur[%d]= %f \n", process_Rank, j, cur[j]);
-                MPI_Send(&cur[j], 1, MPI_DOUBLE, 0, i, MPI_COMM_WORLD);
-            }
+        for (t = 1; t < size_Of_Cluster; t++) {
+            MPI_Send(cur, n_local, MPI_DOUBLE, 0, t, MPI_COMM_WORLD);
         }
-    }
+    } else {
 
-    // master receives all the data from the clusters and puts it in current_array
-    if (process_Rank == 0) {
-        // master puts its own data in current_array
-        for (int i = 0; i < n_local + 1; i++) {
+        for (int i = 0; i <= n_local; i++) {
             current_array[i] = cur[i];
         }
 
-        // master receives data from the clusters
         for (int i = 1; i < size_Of_Cluster; i++) {
-            for (int j = 0; j < n_local + 1; j++) {
-                //printf("Receiving %d received %d\n", i, j);
-                MPI_Recv(&current_array[j], 1, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &status);
-            }
+            printf("Receiving: %d to current_array\n", i);
+            MPI_Recv(current_array + (i * n_local), n_local, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &status);
         }
     }
-
 
     MPI_Finalize();
     free(cur);

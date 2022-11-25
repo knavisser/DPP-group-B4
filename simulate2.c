@@ -43,9 +43,6 @@ double *simulate(const int i_max, const int t_max, double *old_array,
     double *new = malloc((n_local) * sizeof(double));
     double *old = malloc((n_local) * sizeof(double));
 
-    // malloc array of MPI_Request array to handle the requests with the size of n_local
-    MPI_Request *request = malloc(size_Of_Cluster * sizeof(MPI_Request));
-
     int left_neightbor = process_Rank - 1;
     int right_neightbor = process_Rank + 1;
 
@@ -67,27 +64,32 @@ double *simulate(const int i_max, const int t_max, double *old_array,
         MPI_Recv(old, n_local, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &status);
         MPI_Recv(cur, n_local, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &status);
     }
-
-
+    // put handles in array
     for (t = 1; t < t_max; t++) {
         if (left_neightbor != -1) {
-            // MPI_Send(&cur[1], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD);
-            // MPI_Recv(&cur[0], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            MPI_Isend(&cur[1], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD, &request[process_Rank]);
-            MPI_Irecv(&cur[0], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD, &request[process_Rank]);
+            MPI_Request handle = MPI_Irecv(&old[0], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD, &handle);
+            MPI_Wait(&handle, &status);
+
+            //split operations into handle=MPI_Irecv(..) and MPI_Wait(&handle,&status)
+            //MPI_Recv(&cur[0], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Request handle2 = MPI_Irecv(&cur[0], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD, &handle2);
+            MPI_Wait(&handle2, &status);
         }
 
         if (right_neightbor != size_Of_Cluster) {
-            //MPI_Send(&cur[n_local], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD);
-            //MPI_Recv(&cur[n_local + 1], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD, &status);
-            MPI_Isend(&cur[n_local], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD, &request[process_Rank]);
-            MPI_Irecv(&cur[n_local + 1], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD, &request[process_Rank]);
+//            MPI_Send(&cur[n_local], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD);
+//            MPI_Recv(&cur[n_local + 1], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD, &status);
+            MPI_Request handle = MPI_Irecv(&cur[n_local + 1], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD, &handle);
+            MPI_Wait(&handle, &status);
+
+            //split operations into handle=MPI_Irecv(..) and MPI_Wait(&handle,&status)
+            //MPI_Recv(&cur[0], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Request handle2 = MPI_Irecv(&cur[n_local], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD, &handle2);
+            MPI_Wait(&handle2, &status);
         }
 
-        // we calculate the wave equation we are depending on the current and old array we need to wait
         for (int i = 1; i < n_local; i++) {
             new[i] = 2 * cur[i] - old[i] + 0.15 * (cur[i - 1] - (2 * cur[i] - cur[i + 1]));
-            MPI_Wait(&request[process_Rank], &status);
         }
 
         // rotate the buffers
@@ -100,29 +102,27 @@ double *simulate(const int i_max, const int t_max, double *old_array,
     if (process_Rank > 0) {
         for (t = 1; t < size_Of_Cluster; t++) {
             //MPI_Send(cur, n_local, MPI_DOUBLE, 0, t, MPI_COMM_WORLD);
-            MPI_Isend(cur, n_local, MPI_DOUBLE, 0, t, MPI_COMM_WORLD, &request[t]);
+            MPI_Request handle = MPI_Isend(cur, n_local, MPI_DOUBLE, t, tag, MPI_COMM_WORLD, &handle);
+            MPI_Wait(&handle, &status);
         }
     } else {
+
         for (int i = 0; i <= n_local; i++) {
             current_array[i] = cur[i];
         }
+
         for (int i = 1; i < size_Of_Cluster; i++) {
             printf("Receiving: %d to current_array\n", i);
             //MPI_Recv(current_array + (i * n_local), n_local, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &status);
-            MPI_Irecv(current_array + (i * n_local), n_local, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &request[i]);
+            MPI_Request handle = MPI_Irecv(current_array + (i * n_local), n_local, MPI_DOUBLE, i, tag, MPI_COMM_WORLD, &handle);
+            MPI_Wait(&handle, &status);
         }
     }
 
-
+    MPI_Finalize();
     free(cur);
     free(new);
     free(old);
-    free(request);
-    MPI_Finalize();
-
-   // set first and last element to 0
-    current_array[0] = 0;
-    current_array[i_max] = 0;
 
     return current_array;
 }
