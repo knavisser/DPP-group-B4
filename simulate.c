@@ -41,7 +41,7 @@ double *simulate(const int i_max, const int t_max, double *old_array,
 
     double *cur = malloc((n_local + 2) * sizeof(double));
     double *new = malloc((n_local + 2) * sizeof(double));
-    double *old = malloc((n_local+ 2) * sizeof(double));
+    double *old = malloc((n_local + 2) * sizeof(double));
 
     int left_neightbor = process_Rank - 1;
     int right_neightbor = process_Rank + 1;
@@ -76,7 +76,8 @@ double *simulate(const int i_max, const int t_max, double *old_array,
             MPI_Recv(&cur[n_local + 1], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD, &status);
         }
 
-        for (int i = 0; i <= n_local; i++) {
+
+        for (int i = 1; i <= n_local; i++) {
             new[i] = 2.0 * cur[i] - old[i] + 0.15 * (cur[i - 1] - (2 * cur[i] - cur[i + 1]));
         }
 
@@ -96,17 +97,28 @@ double *simulate(const int i_max, const int t_max, double *old_array,
         }
 
         for (int i = 1; i < size_Of_Cluster; i++) {
-            printf("Receiving: %d to current_array\n", i);
             MPI_Recv(current_array + (i * n_local), n_local, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &status);
         }
     }
 
-    MPI_Finalize();
-    free(cur);
-    free(new);
-    free(old);
+    // if master
+    if (process_Rank == 0) {
+        MPI_Finalize();
+        free(cur);
+        free(new);
+        free(old);
 
-    return current_array;
+        current_array[i_max] = 0.0;
+
+        return current_array;
+    } else {
+        MPI_Finalize();
+        free(cur);
+        free(new);
+        free(old);
+
+        exit(0);
+    }
 }
 
 
