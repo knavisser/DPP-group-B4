@@ -106,6 +106,7 @@ double *simulate(const int i_max, const int t_max, double *old_array,
         free(cur);
         free(new);
         free(old);
+
         current_array[i_max] = 0.0;
         return current_array;
     } else {
@@ -113,7 +114,6 @@ double *simulate(const int i_max, const int t_max, double *old_array,
         free(cur);
         free(new);
         free(old);
-
         exit(0);
     }
 }

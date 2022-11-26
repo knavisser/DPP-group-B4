@@ -3,8 +3,8 @@ SRCFILES = assign3_1.c file.c timer.c simulate.c
 TARNAME = assign3_1.tgz
 
 RUNARGS = 100 1000 # i_max t_max, increase this when testing on the DAS4!
-NODES = 1 # How many DAS4 nodes
-PROCESSESPERNODE = 1 # How many processes to spawn on one machine.
+NODES = 8 # How many DAS4 nodes
+PROCESSESPERNODE = 8 # How many processes to spawn on one machine.
 
 # if macos then
 ifeq ($(shell uname), Darwin)
