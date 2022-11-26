@@ -87,19 +87,18 @@ double *simulate(const int i_max, const int t_max, double *old_array,
         cur = new;
         new = tmp;
 
-        // set start and end from current_array, old_array and next_array on 0
-        if (process_Rank == 0) {
+         if (process_Rank == 0) {
             cur[0] = 0;
             old[0] = 0;
             new[0] = 0;
+         }
+
+        if (process_Rank == size_Of_Cluster - 1) {
+            cur[n_local] = 0;
+            old[n_local] = 0;
+            new[n_local] = 0;
         }
 
-        // set start and end from current_array, old_array and next_array on i_max
-        if (process_Rank == size_Of_Cluster - 1) {
-            cur[i_max] = 0;
-            old[i_max] = 0;
-            new[i_max] = 0;
-        }
     }
 
     if (process_Rank > 0) {
