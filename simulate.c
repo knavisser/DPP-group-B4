@@ -69,11 +69,15 @@ double *simulate(const int i_max, const int t_max, double *old_array,
         if (left_neightbor != -1) {
             MPI_Send(&cur[1], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD);
             MPI_Recv(&cur[0], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        } else {
+            new[0] = 0;
         }
 
         if (right_neightbor != size_Of_Cluster) {
             MPI_Send(&cur[n_local], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD);
             MPI_Recv(&cur[n_local + 1], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD, &status);
+        } else {
+            new[n_local] = 0;
         }
 
 
