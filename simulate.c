@@ -69,15 +69,11 @@ double *simulate(const int i_max, const int t_max, double *old_array,
         if (left_neightbor != -1) {
             MPI_Send(&cur[1], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD);
             MPI_Recv(&cur[0], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        } else {
-            new[0] = 0;
         }
 
         if (right_neightbor != size_Of_Cluster) {
             MPI_Send(&cur[n_local], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD);
             MPI_Recv(&cur[n_local + 1], 1, MPI_DOUBLE, right_neightbor, tag, MPI_COMM_WORLD, &status);
-        } else {
-            new[n_local] = 0;
         }
 
 
@@ -90,6 +86,20 @@ double *simulate(const int i_max, const int t_max, double *old_array,
         old = cur;
         cur = new;
         new = tmp;
+
+        // set start and end from current_array, old_array and next_array on 0
+        if (process_Rank == 0) {
+            cur[0] = 0;
+            old[0] = 0;
+            new[0] = 0;
+        }
+
+        // set start and end from current_array, old_array and next_array on i_max
+        if (process_Rank == size_Of_Cluster - 1) {
+            cur[i_max] = 0;
+            old[i_max] = 0;
+            new[i_max] = 0;
+        }
     }
 
     if (process_Rank > 0) {
