@@ -38,10 +38,8 @@ void MYMPI_Bcast(void *buffer, int count, MPI_Datatype datatype, int root, MPI_C
 int main(int argc, char** argv) {
     MPI_Init(NULL, NULL);
 
-    int world_rank;
+    int world_rank, world_size;
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-
-    int world_size;
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     int data;
 
