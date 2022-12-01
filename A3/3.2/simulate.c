@@ -44,7 +44,7 @@ double *simulate(const int i_max, const int t_max, double *old_array,
     double *new = malloc((n_local) * sizeof(double));
     double *old = malloc((n_local) * sizeof(double));
 
-    // malloc array of MPI_Request array to handle the requests with the size of n_local
+    // Request variables for the MPI_Isend and MPI_Irecv functions
     MPI_Request *request = malloc(size_Of_Cluster * sizeof(MPI_Request));
 
 
@@ -67,7 +67,7 @@ double *simulate(const int i_max, const int t_max, double *old_array,
             MPI_Send(old, n_local, MPI_DOUBLE, t, tag, MPI_COMM_WORLD);
         }
     }
-    // If we are not the root process, then we want to receive the arrays from the root process.
+        // If we are not the root process, then we want to receive the arrays from the root process.
     else {
         MPI_Recv(old, n_local, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &status);
         MPI_Recv(cur, n_local, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &status);
@@ -78,6 +78,7 @@ double *simulate(const int i_max, const int t_max, double *old_array,
     for (t = 1; t < t_max; t++) {
         // Calculate the start and end index for each process.
         if (left_neightbor != -1) {
+            // Send the first element of the array to the left neightbor.
             MPI_Isend(&cur[1], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD, &request[process_Rank]);
             MPI_Irecv(&cur[0], 1, MPI_DOUBLE, left_neightbor, tag, MPI_COMM_WORLD, &request[process_Rank]);
         }
@@ -90,8 +91,11 @@ double *simulate(const int i_max, const int t_max, double *old_array,
 
         // Calculate the start and end index for each process and wait for the message to be sent or received.
         for (int i = 1; i < n_local; i++) {
+            // Calculate the start and end index for each process. + 2 for the ghost cells.
+            // Wait for the message to be sent or received.
             MPI_Wait(&request[process_Rank], &status);
             new[i] = 2 * cur[i] - old[i] + 0.15 * (cur[i - 1] - (2 * cur[i] - cur[i + 1]));
+            MPI_Wait(&request[process_Rank], &status);
         }
 
         // rotate the buffers
@@ -107,13 +111,28 @@ double *simulate(const int i_max, const int t_max, double *old_array,
             MPI_Isend(cur, n_local, MPI_DOUBLE, 0, t, MPI_COMM_WORLD, &request[t]);
         }
     }
-    // If we are not the root process, then we want to send the arrays to the root process.
+        // If we are not the root process, then we want to send the arrays to the root process.
     else {
         for (int i = 0; i <= n_local; i++) {
+            MPI_Wait(&request[process_Rank], &status);
             current_array[i] = cur[i];
         }
         for (int i = 1; i < size_Of_Cluster; i++) {
             MPI_Irecv(current_array + (i * n_local), n_local, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &request[i]);
+        }
+    }
+
+    // Merge the arrays by sending them to the root process.
+    if (process_Rank > 0) {
+        MPI_Send(cur, n_local, MPI_DOUBLE, 0, process_Rank, MPI_COMM_WORLD);
+    } else {
+        // If we are the root process, then we want to receive the arrays from the other processes.
+        for (int i = 0; i <= n_local; i++) {
+            current_array[i] = cur[i];
+        }
+
+        for (int i = 1; i < size_Of_Cluster; i++) {
+            MPI_Recv(current_array + (i * n_local), n_local, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &status);
         }
     }
 

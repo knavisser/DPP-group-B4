@@ -1,6 +1,6 @@
 module load prun
 module load openmpi/gcc/64
-module load cuda11.1/toolkit/11.1.1
+#module load cuda11.1/toolkit/11.1.1
 
 make clean
 make

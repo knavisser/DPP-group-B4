@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="1fee573f-1d06-4e2c-9f5d-0aeccfe591de" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../3.3/collective" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../3.3/collective.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../3.3/script.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../DPP_MPI_2022-3.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../README" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../assign3_1.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../data/sin_0.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../data/sin_1.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../data/sin_2.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments/first/efficiency.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments/first/plot.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments/first/scalability.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments/first/speedup.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments/first/speedupNodes.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments/first/speedupNodesSmooth.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments/first/speedupVersus.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments/first/totalP1.1.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments/first/totalP1.2.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments/first/totalP3.1_1proces.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments/first/totalP3.1_4processes.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments/first/totalP3.1_8processes.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments/first/totalS1.1.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments/first/totalS1.2.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../experiments/first/totalS3.1txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../file.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../file.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../generatedata.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../generatedata.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../plot.gnp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../result_100_1000_sin.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../script.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../simulate.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../simulate.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../simulate_ISend.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../timer.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../timer.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../total3.1.txt" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2IJ2VTLIXAPqbo36J6Ow4uREa41" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/jasperbruin/Documents/Programming/DPP-group-B4/A4&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  }
+}</component>
+  <component name="RunManager" selected="Shell Script.submit.sh">
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="A4" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="submit.sh" type="ShConfigurationType" temporary="true">
+      <option name="SCRIPT_TEXT" value="" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/submit.sh" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/bin/zsh" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="true" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="Dockerfile" type="docker-deploy" factoryName="dockerfile" temporary="true" server-name="Docker">
+      <deployment type="dockerfile">
+        <settings>
+          <option name="sourceFilePath" value="Dockerfile" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="docker-compose.yaml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="sourceFilePath" value="docker-compose.yaml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Shell Script.submit.sh" />
+        <item itemvalue="Docker.docker-compose.yaml: Compose Deployment" />
+        <item itemvalue="Docker.Dockerfile" />
+        <item itemvalue="Python.test" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1fee573f-1d06-4e2c-9f5d-0aeccfe591de" name="Changes" comment="" />
+      <created>1669885390375</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1669885390375</updated>
+      <workItem from="1669885391856" duration="86000" />
+      <workItem from="1669885595821" duration="1746000" />
+      <workItem from="1669887349519" duration="762000" />
+      <workItem from="1669888119245" duration="1347000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/A4$test.coverage" NAME="test Coverage Results" MODIFIED="1669886854592" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>

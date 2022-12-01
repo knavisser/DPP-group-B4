@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <mpi.h>
 
+
+
 void MYMPI_Bcast(void *buffer, int count, MPI_Datatype datatype, int root, MPI_Comm communicator)
 {
     // This function differs from the MPI_Send and MPI_Recv functions in that it is collective, meaning that all processes
@@ -43,6 +45,9 @@ int main(int argc, char** argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     int data;
 
+//    The root process decides what data to send and where to send it to. This is useful for distributing work to other
+//    processes. The root process sends the data to all other processes in the communicator. The other processes receive
+//    the data from the root process. The root process is the process with rank 0 in the communicator.
     if (world_rank == 0) {
         data = 10000;
         MYMPI_Bcast(&data, 1, MPI_INT, 0, MPI_COMM_WORLD);
